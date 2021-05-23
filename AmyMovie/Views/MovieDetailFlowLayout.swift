@@ -48,7 +48,6 @@ class MovieDetailFlowLayout: UICollectionViewFlowLayout {
             
             //Add cell attribute to last row
             movieDetailRows.last?.add(attribute: attribute)
-            print(attribute.frame)
         }
         
         movieDetailRows.forEach { $0.detailLabelLayout() }

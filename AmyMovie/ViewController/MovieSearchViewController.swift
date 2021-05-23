@@ -35,6 +35,7 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Amy Movie Search"
         setupTableView()
         setupSearchController()
     }
@@ -65,7 +66,7 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         if input == searchController.searchBar.text{
-            return 
+            return
         }
         input = searchController.searchBar.text ?? ""
         viewModel?.updateSearchTerm(searchController.searchBar.text ?? "")

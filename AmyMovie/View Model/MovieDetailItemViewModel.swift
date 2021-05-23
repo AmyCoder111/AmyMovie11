@@ -13,13 +13,9 @@ protocol MovieDetailItemViewModelType {
     var overview: CurrentValueSubject<String, Never> { get }
     var backdropImage: PassthroughSubject<UIImage, ServiceError> { get }
     var rating: CurrentValueSubject<String, Never> { get }
-    var tagline: CurrentValueSubject<String, Never> { get }
     var genres: [String] { get }
     var spokenLanguages: [String] { get }
     var productionCompanies: [String] { get }
-    
-    //let the model know it will be subscribed to
-    func willBeSubscribedTo()
     
     //let the model know it has already been subscribed to
     func hasSubscribedTo()
@@ -29,7 +25,6 @@ class MovieDetailItemViewModel: MovieDetailItemViewModelType {
     let title: CurrentValueSubject<String, Never>
     let overview: CurrentValueSubject<String, Never>
     let rating: CurrentValueSubject<String, Never>
-    let tagline: CurrentValueSubject<String, Never>
     var backdropImage = PassthroughSubject<UIImage, ServiceError>()
     var genres: [String] = []
     var spokenLanguages: [String] = []
@@ -42,7 +37,6 @@ class MovieDetailItemViewModel: MovieDetailItemViewModelType {
         self.title = .init(item.title ?? "")
         self.overview = .init(item.overview ?? "")
         self.rating = .init(String(item.voteAverage ?? 0))
-        self.tagline = .init(item.tagline ?? "")
         self.backdropPath = item.backdropPath
         self.assetService = assetService
         
@@ -69,12 +63,23 @@ class MovieDetailItemViewModel: MovieDetailItemViewModelType {
         self.spokenLanguages = spokenLanguages
     }
     
-    func willBeSubscribedTo() {
-        return
-    }
-    
     func hasSubscribedTo() {
-        //TODO: request backdrop image
+        guard let backdropPath = backdropPath else {
+            backdropImage.send(completion: .failure(.custom("Lack of backdrop image path")))
+            return
+        }
+        
+        let path = "w500/" + backdropPath
+        
+        self.assetService.fetchPosterImage(path) { [weak self] result in
+            switch result {
+                case .success(let image):
+                    self?.backdropImage.send(image)
+                    self?.backdropImage.send(completion: .finished)
+                case .failure(let error):
+                    self?.backdropImage.send(completion: .failure(error))
+            }
+        }
         return
     }
 }

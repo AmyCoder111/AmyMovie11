@@ -15,7 +15,7 @@ protocol MovieAssetServiceType {
 
 final class MovieAssetService: MovieAssetServiceType {
     
-    private let apiClient: APIClient = APIClient(baseURL: "https://image.tmdb.org/t/p/w600_and_h900_bestv2/")
+    private let apiClient: APIClient = APIClient(baseURL: "https://image.tmdb.org/t/p/")
     private let imageQueue: DispatchQueue = DispatchQueue(label:"image_decoding", attributes: .concurrent)
     private var imageCache = NSCache<NSString, UIImage>()
     

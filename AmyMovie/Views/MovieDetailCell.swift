@@ -15,6 +15,7 @@ class MovieDetailCell: UICollectionViewCell {
         
         layer.borderWidth = 1
         layer.borderColor = UIColor.gray.cgColor
+        layer.cornerRadius = 5
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
         detailLabel.lineBreakMode = .byTruncatingTail
         detailLabel.numberOfLines = 2
@@ -30,30 +31,5 @@ class MovieDetailCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         detailLabel.text = nil
-    }
-}
-
-class MovieGenreDetailCell: MovieDetailCell {
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        backgroundColor = UIColor.systemBlue
-    }
-}
-
-//class MovieGenreDetailCell: UICollectionViewCell {
-//    @IBOutlet var genreLabel: UILabel!
-//    override func awakeFromNib() {
-//        super.awakeFromNib()
-//        self.layer.borderColor = UIColor.gray.cgColor
-//        self.layer.borderWidth = 1
-//    }
-//}
-
-class MovieCompanyDetailCell: MovieDetailCell {
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        backgroundColor = UIColor.orange
     }
 }

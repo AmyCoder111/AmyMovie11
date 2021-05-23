@@ -27,7 +27,6 @@ struct MovieDetailItem: Codable {
     let backdropPath: String?
     var genres: [Genre]
     let voteAverage: Float?
-    let tagline: String?
     var productionCompanies: [ProductionCompany]
     var spokenLanguages: [SpokenLanguage]
 }

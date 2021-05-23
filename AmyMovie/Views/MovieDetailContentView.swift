@@ -10,7 +10,6 @@ import Combine
 
 class MovieDetailContentView: UIView {
     @IBOutlet weak var backdropView: UIImageView!
-    @IBOutlet weak var genres: UICollectionView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var ratingScore: UILabel!
     @IBOutlet weak var tagline: UILabel!
@@ -23,7 +22,6 @@ class MovieDetailContentView: UIView {
             unsubscribedFromViewModel()
         }
         didSet {
-            viewModel?.willBeSubscribedTo()
             subscribedToViewModel()
             viewModel?.hasSubscribedTo()
         }
@@ -32,7 +30,6 @@ class MovieDetailContentView: UIView {
     func setEstimatedItemSize() {
         let collectionViewLayout = MovieDetailFlowLayout()
         collectionViewLayout.estimatedItemSize = CGSize(width: 140, height: 40)
-        genres.collectionViewLayout = collectionViewLayout
         companies.collectionViewLayout = collectionViewLayout
     }
     
@@ -53,7 +50,7 @@ class MovieDetailContentView: UIView {
             self?.ratingScore.text = value
         }))
         
-        subscribtions.append(viewModel.tagline.sink(receiveValue: { [weak self] value in
+        subscribtions.append(viewModel.overview.sink(receiveValue: { [weak self] value in
             self?.tagline.text = value
         }))
         
@@ -65,41 +62,70 @@ class MovieDetailContentView: UIView {
             self?.backdropView.image = image
         }))
         
-        genres.reloadData()
         companies.reloadData()
     }
     
 }
     
-extension MovieDetailContentView: UICollectionViewDataSource, UICollectionViewDelegate {
+extension MovieDetailContentView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 3
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == genres {
+        if section == 0 {
             return self.viewModel?.genres.count ?? 0
-        } else if collectionView == companies {
+        } else if section == 1 {
             return self.viewModel?.productionCompanies.count ?? 0
         }
         
-        return self.viewModel?.productionCompanies.count ?? 0
+        return self.viewModel?.spokenLanguages.count ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if (kind == UICollectionView.elementKindSectionHeader) {
+            if let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "MovieDetailCollectionReusableView", for: indexPath) as? MovieDetailCollectionReusableView {
+                var sectionText: String?
+                //TODO: localization
+                if indexPath.section == 0 {
+                    sectionText = "Genres"
+                } else if indexPath.section == 1 {
+                    sectionText = "ProductionCompanies"
+                } else {
+                    sectionText = "Languages"
+                }
+                sectionHeader.detailHeaderLabel.text = sectionText
+                return sectionHeader
+            }
+        }
+        
+        return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: 200, height: 40)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var movieDetailCell: MovieDetailCell? = nil
-        if collectionView == genres {
-            guard let genreCell = collectionView.dequeueReusableCell(withReuseIdentifier: "genreCell", for: indexPath) as? MovieGenreDetailCell else {
-                return MovieGenreDetailCell()
-            }
-            genreCell.detailLabel.text = self.viewModel?.genres[indexPath.row]
-            genreCell.detailLabel.preferredMaxLayoutWidth = collectionView.frame.width
-            return genreCell
-        } else if collectionView == companies {
-            guard let companyCell = collectionView.dequeueReusableCell(withReuseIdentifier: "companyCell", for: indexPath) as? MovieCompanyDetailCell else {
-                return MovieCompanyDetailCell()
-            }
-            companyCell.detailLabel.text = self.viewModel?.productionCompanies[indexPath.row]
-            companyCell.detailLabel.preferredMaxLayoutWidth = collectionView.frame.width
-            movieDetailCell = companyCell
+        guard let detailCell = collectionView.dequeueReusableCell(withReuseIdentifier: "detailCell", for: indexPath) as? MovieDetailCell else {
+            return MovieDetailCell()
         }
+        var labelText = ""
+        if indexPath.section == 0 {
+            labelText = self.viewModel?.genres[indexPath.row] ?? ""
+            detailCell.backgroundColor = UIColor.yellow
+        } else if indexPath.section == 1 {
+            labelText = self.viewModel?.productionCompanies[indexPath.row] ?? ""
+            detailCell.backgroundColor = UIColor.orange
+        } else {
+            labelText = self.viewModel?.spokenLanguages[indexPath.row] ?? ""
+            detailCell.backgroundColor = UIColor.red
+        }
+        detailCell.detailLabel.text = labelText
+        detailCell.detailLabel.preferredMaxLayoutWidth = collectionView.frame.width - 20
+        movieDetailCell = detailCell
         
         return movieDetailCell ?? MovieDetailCell()
     }
