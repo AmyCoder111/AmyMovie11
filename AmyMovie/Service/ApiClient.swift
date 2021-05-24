@@ -30,35 +30,26 @@ final class APIClient {
         let request = URLRequest(baseURL: self.baseURL, path: path, method: method, params: params)
         
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard (error as NSError?)?.code != NSURLErrorCancelled else {
+                return
+            }
+            
             var result: Any? = nil
             if let data = data {
                 result = data
             }
             
+            if error != nil {
+                let serviceError = ServiceError(info: ["message": error?.localizedDescription])
+                completion(.failure(serviceError))
+            }
+            
             if let httpResponse = response as? HTTPURLResponse, (200..<300) ~= httpResponse.statusCode, let result = result {
                 completion(.success(result))
-            } else {
-                let error = (result as? [String : Any?]).flatMap(ServiceError.init) ?? ServiceError.other
-                completion(.failure(error))
             }
         }
         
         task.resume()
         return task
-    }
-}
-
-// extensions
-
-extension ServiceError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .noInternetConnection:
-            return "No Internet Connection"
-        case .other:
-            return "Something went wrong"
-        case .custom(let msg):
-            return msg
-        }
     }
 }

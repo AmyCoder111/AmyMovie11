@@ -35,3 +35,16 @@ extension ServiceError: Equatable {
         }
     }
 }
+
+extension ServiceError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .noInternetConnection:
+            return "No Internet Connection"
+        case .other:
+            return "Something went wrong"
+        case .custom(let msg):
+            return msg
+        }
+    }
+}

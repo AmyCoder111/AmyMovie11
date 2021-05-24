@@ -34,6 +34,7 @@ class MovieDetailViewModel: MovieDetailViewModelType {
     }
     
     func fetchMovieDetail() {
+        state.value = .loading
         self.detailService.fetchMovieDetail(self.movieId) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {

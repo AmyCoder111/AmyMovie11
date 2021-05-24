@@ -10,7 +10,6 @@ import Combine
 
 //TODO: tests
 class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
-
     private var viewModel: MovieSearchViewModelType?
     private var subscription: AnyCancellable?
     private var items = [MovieItemViewModelType]()
@@ -20,7 +19,8 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     private static let cellHeight: CGFloat = 200
     
     private let searchController = UISearchController(searchResultsController: nil)
-    var tableView: UITableView = UITableView()
+    private var tableView: UITableView = UITableView()
+    private var spinner: UIActivityIndicatorView = UIActivityIndicatorView(style: .large)
     
     func inject(viewModel: MovieSearchViewModelType) {
         self.viewModel = viewModel
@@ -35,9 +35,19 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Amy Movie Search"
+        title = "Film Finder"
         setupTableView()
+        setupActivityIndicator()
         setupSearchController()
+    }
+    
+    private func setupActivityIndicator() {
+        spinner.startAnimating()
+        tableView.addSubview(spinner)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
+        spinner.isHidden = true
     }
     
     private func setupTableView() {
@@ -57,7 +67,6 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     private func setupSearchController() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        //TODO: Localization
         searchController.searchBar.placeholder = "Search Movies"
         navigationItem.searchController = searchController
         //Ensure that the search bar doesn’t remain on the screen if the user navigates to another view controller while the UISearchController is active.
@@ -73,16 +82,19 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     }
     
     private func updateView(state: MovieSearchState) {
-        //TODO: activity indicators/event handling
         switch state {
             case .error:
+                spinner.isHidden = true
                 items = []
             case .noInternet:
+                spinner.isHidden = true
                 items = []
             case .results(let movies):
+                spinner.isHidden = true
                 items = movies
                 self.tableView.tableFooterView = nil
             case .loading:
+                spinner.isHidden = false
                 items = []
             case .selection(_):
                 //handle cases when in selection

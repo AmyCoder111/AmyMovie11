@@ -87,7 +87,6 @@ extension MovieDetailContentView: UICollectionViewDataSource, UICollectionViewDe
         if (kind == UICollectionView.elementKindSectionHeader) {
             if let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "MovieDetailCollectionReusableView", for: indexPath) as? MovieDetailCollectionReusableView {
                 var sectionText: String?
-                //TODO: localization
                 if indexPath.section == 0 {
                     sectionText = "Genres"
                 } else if indexPath.section == 1 {

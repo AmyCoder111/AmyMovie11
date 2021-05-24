@@ -10,7 +10,7 @@ import UIKit
 
 enum MovieSearchState {
     case results([MovieItemViewModelType])
-    case error
+    case error(String)
     case noInternet
     case loading
     case selection(Int)
@@ -64,7 +64,6 @@ class MovieSearchViewModel: MovieSearchViewModelType {
     }
     
     func updateSearchTerm(_ input: String) {
-        
         currentTask?.cancel()
         searchService.cancelActiveSearch()
         totalPages = 1
@@ -80,7 +79,6 @@ class MovieSearchViewModel: MovieSearchViewModelType {
         
         let task = DispatchWorkItem { [weak self] in
             self?.currentTask = nil
-            //TODO: properly handle this
             self?.executeSearch(input, page: 1)
         }
         
@@ -108,10 +106,9 @@ class MovieSearchViewModel: MovieSearchViewModelType {
                 case .noInternetConnection:
                     strongSelf.state.value = .noInternet
                 case .other:
-                    strongSelf.state.value = .error
-                //TODO: handle error better here
-                case .custom(_):
-                    strongSelf.state.value = .error
+                    strongSelf.state.value = .error(error.errorDescription ?? "")
+                case .custom(let msg):
+                    strongSelf.state.value = .error(msg)
                 }
             }
         }
