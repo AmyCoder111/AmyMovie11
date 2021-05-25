@@ -54,7 +54,7 @@ class MovieSearchItemViewModel: MovieItemViewModelType {
             return
         }
         
-        let path = "w600_and_h900_bestv2/" + posterPath
+        let path = "w600_and_h900_bestv2" + posterPath
         
         assetService.fetchPosterImage(path) { [weak self] result in
             switch result {

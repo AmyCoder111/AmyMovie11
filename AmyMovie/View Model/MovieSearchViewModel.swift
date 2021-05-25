@@ -89,27 +89,28 @@ class MovieSearchViewModel: MovieSearchViewModelType {
     }
     
     func executeSearch(_ text: String, page: Int) {
-        searchService.fetchMovies(text, page: page) { [weak self, assetService] (items, error) in
+        searchService.fetchMovies(text, page: page) { [weak self, assetService] result in
             guard let strongSelf = self else { return }
-            //model to viewModel
-            if let items = items {
-                let resultItems = items.results.map ({ movie in
-                    return MovieSearchItemViewModel(item: movie, assetService: assetService)
-                })
-                
-                strongSelf.movieItems.append(contentsOf: resultItems)
-                strongSelf.totalPages = items.totalPages
-                strongSelf.currentPage = page + 1
-                strongSelf.state.value = .results(strongSelf.movieItems)
-            } else if let error = error {
-                switch error {
-                case .noInternetConnection:
-                    strongSelf.state.value = .noInternet
-                case .other:
-                    strongSelf.state.value = .error(error.errorDescription ?? "")
-                case .custom(let msg):
-                    strongSelf.state.value = .error(msg)
-                }
+            
+            switch result {
+                case .success(let movies):
+                    let resultItems = movies.results.map ({ movie in
+                        return MovieSearchItemViewModel(item: movie, assetService: assetService)
+                    })
+                    
+                    strongSelf.movieItems.append(contentsOf: resultItems)
+                    strongSelf.totalPages = movies.totalPages
+                    strongSelf.currentPage = page + 1
+                    strongSelf.state.value = .results(strongSelf.movieItems)
+                case .failure(let error):
+                    switch error {
+                    case .noInternetConnection:
+                        strongSelf.state.value = .noInternet
+                    case .other:
+                        strongSelf.state.value = .error(error.errorDescription ?? "")
+                    case .custom(let msg):
+                        strongSelf.state.value = .error(msg)
+                    }
             }
         }
     }

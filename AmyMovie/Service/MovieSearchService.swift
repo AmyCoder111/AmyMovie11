@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol MovieSearchServiceType {
-    func fetchMovies(_ searchString: String?, page: Int, completion: @escaping (MovieItems?, ServiceError?) -> Void)
+    func fetchMovies(_ searchString: String?, page: Int, completion: @escaping (Result<MovieItems, ServiceError>) -> Void)
     func cancelActiveSearch()
 }
 
@@ -21,12 +21,12 @@ final class MovieSearchService: MovieSearchServiceType {
     
     private let apiClient: APIClient = APIClient(baseURL: "https://api.themoviedb.org")
     
-    func fetchMovies(_ searchString: String?, page: Int, completion: @escaping (MovieItems?, ServiceError?) -> Void) {
+    func fetchMovies(_ searchString: String?, page: Int, completion: @escaping (Result<MovieItems, ServiceError>) -> Void) {
         guard let searchStr = searchString else { return }
         
         let cacheKey = NSString(string: searchStr + "_" + "\(page)")
         if let movies = cache.object(forKey: cacheKey) {
-            completion(movies, nil)
+            completion(.success(movies))
             return
         }
         
@@ -42,17 +42,17 @@ final class MovieSearchService: MovieSearchServiceType {
                     jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
                     do {
                         guard let data = data as? Data else {
-                            completion(nil, .custom("wrong data type"))
+                            completion(.failure(.custom("wrong data type")))
                             return
                         }
                         let movieItems = try jsonDecoder.decode(MovieItems.self, from: data)
                         self?.cache.setObject(movieItems, forKey: cacheKey)
-                        completion(movieItems, nil)
+                        completion(.success(movieItems))
                     } catch {
-                        completion(nil, .custom("Fail to decode search results"))
+                        completion(.failure(.custom("Fail to decode search results")))
                     }
                 case .failure(let error):
-                    completion(nil, error)
+                    completion(.failure(error))
                     
             }
         }

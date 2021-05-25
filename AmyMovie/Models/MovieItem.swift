@@ -22,4 +22,11 @@ class MovieItems: Codable {
     let totalResults: Int
     let page: Int
     //no need to customize keys since we use set .convertFromSnakeCase on the decoder
+    
+    init(_ results: [MovieItem]) {
+        self.results = results
+        self.totalPages = 0
+        self.totalResults = 0
+        self.page = 1
+    }
 }
