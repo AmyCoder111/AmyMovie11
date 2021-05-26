@@ -53,7 +53,7 @@
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="xlC-Je-rDW" secondAttribute="bottom" constant="20" id="Rdf-j7-0tr"/>
                     <constraint firstItem="xlC-Je-rDW" firstAttribute="top" secondItem="fdi-cN-LLe" secondAttribute="top" constant="20" id="XA9-xN-tZE"/>
                     <constraint firstItem="3zf-K3-wHh" firstAttribute="top" secondItem="fdi-cN-LLe" secondAttribute="top" constant="20" id="eah-9T-buW"/>
-                    <constraint firstAttribute="bottom" secondItem="3zf-K3-wHh" secondAttribute="bottom" constant="20" id="jR3-sH-iNe"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="3zf-K3-wHh" secondAttribute="bottom" constant="20" id="jR3-sH-iNe"/>
                     <constraint firstItem="3zf-K3-wHh" firstAttribute="leading" secondItem="fdi-cN-LLe" secondAttribute="leadingMargin" id="w7V-9h-FdD"/>
                     <constraint firstAttribute="trailing" secondItem="xlC-Je-rDW" secondAttribute="trailing" constant="20" id="z6M-UP-jCR"/>
                 </constraints>

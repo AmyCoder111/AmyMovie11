@@ -18,10 +18,6 @@ class MovieAssetServiceMock: MovieAssetServiceType {
             completionHandler(result)
         }
     }
-    
-    func cancelDownloadImage() {
-        return
-    }
 }
 
 class MovieSearchServiceMock: MovieSearchServiceType {
@@ -37,6 +33,21 @@ class MovieSearchServiceMock: MovieSearchServiceType {
 
     func cancelActiveSearch() {
         cancelSearchCount += 1
+    }
+}
+
+class MovieDetailServiceMock: MovieDetailServiceType {
+
+    var result: Result<MovieDetailItem, ServiceError> = .failure(.custom("invalid response"))
+
+    func fetchMovieDetail(_ movieId: String?, completionHandler: @escaping (Result<MovieDetailItem, ServiceError>) -> Void)  {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [result] in
+            completionHandler(result)
+        }
+    }
+    
+    func cancelFetchMovieDetail() {
+        return
     }
 }
 

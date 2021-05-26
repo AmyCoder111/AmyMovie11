@@ -70,6 +70,33 @@ class MovieSearchViewModelTests: XCTestCase {
         sub.cancel()
     }
     
+    func testSelectOnCell() {
+        let expectation = self.expectation(description: "test cell selection")
+        expectation.expectedFulfillmentCount = 4
+        
+        var resultQueue = [[], validMovieModels]
+        let sub = viewModel.state.sink(receiveValue: { value in
+            switch value {
+            case .results(let movies):
+                assert(movies.count == resultQueue.removeFirst().count)
+                expectation.fulfill()
+            case .loading:
+                expectation.fulfill()
+            case .selection(_):
+                expectation.fulfill()
+            case .error, .noInternet:
+                assertionFailure("Wrong")
+            }
+        })
+        
+        searchService.result = .success(validMovieResults)
+        viewModel.updateSearchTerm("Love")
+        viewModel?.state.send(.selection(11))
+
+        waitForExpectations(timeout: 10, handler: nil)
+        sub.cancel()
+    }
+    
     func testTypingFastResultsState() {
         // test having 2 results but making 3 queries fast
 

@@ -10,7 +10,6 @@ import UIKit
 
 protocol MovieAssetServiceType {
     func fetchPosterImage(_ path: String?, completionHandler: @escaping (Result<UIImage, ServiceError>) -> Void)
-    func cancelDownloadImage()
 }
 
 final class MovieAssetService: MovieAssetServiceType {
@@ -52,10 +51,5 @@ final class MovieAssetService: MovieAssetServiceType {
         }
         
         task?.resume()
-    }
-    
-    func cancelDownloadImage() {
-        //TODO: cache requests in memory and implement the cancel logic
-        return
     }
 }

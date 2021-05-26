@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-//TODO: tests
+//TODO: add default placeholder when users are not searching
 class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     private var viewModel: MovieSearchViewModelType?
     private var subscription: AnyCancellable?

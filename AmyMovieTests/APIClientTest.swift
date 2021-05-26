@@ -58,5 +58,4 @@ class APIClientTest: XCTestCase {
         })
         self.waitForExpectations(timeout: 10, handler: nil)
     }
-
 }
