@@ -16,7 +16,7 @@ protocol MovieSearchServiceType {
 final class MovieSearchService: MovieSearchServiceType {
     
     private var fetchMoviesTask: URLSessionDataTask?
-    private let apiKey = "2a61185ef6a27f400fd92820ad9e8537"
+    private let apiKey = "1ff0b62eacbf37a55d91e784ea4a80ed"
     private var cache = NSCache<NSString, MovieItems>()
     
     private let apiClient: APIClient = APIClient(baseURL: "https://api.themoviedb.org")

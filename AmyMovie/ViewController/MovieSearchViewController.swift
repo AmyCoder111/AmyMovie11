@@ -21,6 +21,8 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
     private let searchController = UISearchController(searchResultsController: nil)
     private var tableView: UITableView = UITableView()
     private var spinner: UIActivityIndicatorView = UIActivityIndicatorView(style: .large)
+    private var overlayView: UIView = UIView(frame: .zero)
+    private var placeholderImageView: UIImageView = UIImageView(image: UIImage(named: "start_search"))
     
     func inject(viewModel: MovieSearchViewModelType) {
         self.viewModel = viewModel
@@ -37,8 +39,22 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
         
         title = "Film Finder"
         setupTableView()
+        setupOverlayView()
         setupActivityIndicator()
         setupSearchController()
+    }
+    
+    private func setupOverlayView() {
+        overlayView.backgroundColor = .darkGray
+        self.tableView.addSubview(overlayView)
+        overlayView.frame = view.frame
+        overlayView.addSubview(placeholderImageView)
+        placeholderImageView.translatesAutoresizingMaskIntoConstraints = false
+        placeholderImageView.contentMode = .scaleAspectFit
+        placeholderImageView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        placeholderImageView.heightAnchor.constraint(equalTo: placeholderImageView.widthAnchor).isActive = true
+        placeholderImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        placeholderImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     private func setupActivityIndicator() {
@@ -78,6 +94,9 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
             return
         }
         input = searchController.searchBar.text ?? ""
+        if searchController.searchBar.text == "" {
+            overlayView.isHidden = false
+        }
         viewModel?.updateSearchTerm(searchController.searchBar.text ?? "")
     }
     
@@ -85,12 +104,17 @@ class MovieSearchViewController: UIViewController, UISearchResultsUpdating {
         switch state {
             case .error:
                 spinner.isHidden = true
+                overlayView.isHidden = false
                 items = []
             case .noInternet:
                 spinner.isHidden = true
+                overlayView.isHidden = false
                 items = []
             case .results(let movies):
                 spinner.isHidden = true
+                if !movies.isEmpty {
+                    overlayView.isHidden = true
+                }
                 items = movies
                 self.tableView.tableFooterView = nil
             case .loading:
