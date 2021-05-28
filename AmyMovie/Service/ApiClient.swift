@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Reachability
 
 enum RequestMethod: String {
     case get = "GET"
@@ -16,14 +15,15 @@ enum RequestMethod: String {
 
 final class APIClient {
     private var baseURL: String
+    private let reachabilityService: ReachabilityServiceType
     
     init(baseURL: String) {
         self.baseURL = baseURL
+        reachabilityService = ReachabilityService()
     }
     
     func load(path: String, method: RequestMethod, params: [String: String], completion: @escaping (Result<Any, ServiceError>) -> Void) -> URLSessionDataTask? {
-        let reachability = try! Reachability()
-        if reachability.connection == .unavailable {
+        if reachabilityService.isNetworkAvailable == false {
             completion(.failure(.noInternetConnection))
         }
         
